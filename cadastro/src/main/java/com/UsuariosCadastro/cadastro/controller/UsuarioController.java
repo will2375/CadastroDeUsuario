@@ -1,6 +1,11 @@
 package com.UsuariosCadastro.cadastro.controller;
 
+import com.UsuariosCadastro.cadastro.intregacaoExterna.client.BeerClient;
 import com.UsuariosCadastro.cadastro.model.UsuarioModel;
+import com.UsuariosCadastro.cadastro.model.dto.UsuarioRequest;
+import com.UsuariosCadastro.cadastro.model.dto.UsuarioResponse;
+import com.UsuariosCadastro.cadastro.model.factory.UsuarioRequestFactory;
+import com.UsuariosCadastro.cadastro.model.factory.UsuarioResponseFactory;
 import com.UsuariosCadastro.cadastro.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,8 +23,11 @@ public class UsuarioController {
     @Autowired
     private UsuarioService service;
 
+    @Autowired
+    private BeerClient feign;
+
     @GetMapping
-    public ResponseEntity<List<UsuarioModel>> buscarTodos() {
+    public ResponseEntity<List<UsuarioResponse>> buscarTodos() {
         return ResponseEntity.ok(service.modelList());
     }
 
@@ -29,8 +37,11 @@ public class UsuarioController {
     }
 
     @PostMapping("/cadastro")
-    public ResponseEntity<UsuarioModel> cadastrar(@RequestBody @Valid UsuarioModel model) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.cadastro(model));
+    public ResponseEntity<UsuarioResponse> cadastrar(@RequestBody @Valid UsuarioRequest request) {
+        UsuarioModel model = UsuarioRequestFactory.criar(request);
+        service.cadastro(model);
+        UsuarioResponse response = UsuarioResponseFactory.criar(model);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PatchMapping("/{id}")

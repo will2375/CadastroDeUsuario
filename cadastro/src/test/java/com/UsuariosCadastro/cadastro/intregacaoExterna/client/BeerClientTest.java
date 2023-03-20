@@ -1,6 +1,6 @@
 package com.UsuariosCadastro.cadastro.intregacaoExterna.client;
 
-import com.UsuariosCadastro.cadastro.model.BeerResponse;
+import com.UsuariosCadastro.cadastro.model.dto.BeerRequest;
 import feign.Feign;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
@@ -38,7 +38,7 @@ class BeerClientTest {
                 RESPONSE_BEER
         ));
 
-        List<BeerResponse> randomBeer = beerClient.getRandomBeer();
+        List<BeerRequest> randomBeer = beerClient.getRandomBeer();
 
         assertFalse(randomBeer.isEmpty());
         assertThat(randomBeer.get(0).getId(), equalTo(1L));
@@ -52,7 +52,7 @@ class BeerClientTest {
                 RESPONSE_BEER
         ));
 
-        List<BeerResponse> randomBeer = beerClient.getBeerById(1L);
+        List<BeerRequest> randomBeer = beerClient.getBeerById(1L);
 
         assertFalse(randomBeer.isEmpty());
         assertThat(randomBeer.get(0).getId(), equalTo(1L));
@@ -66,7 +66,6 @@ class BeerClientTest {
                 .contract(new SpringMvcContract())
                 .target(BeerClient.class, BASE_URL);
     }
-
 
     @Test
     void getBeerById() {

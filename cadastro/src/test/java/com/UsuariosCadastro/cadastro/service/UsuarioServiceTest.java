@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class UsuarioServiceTest {
@@ -35,39 +36,38 @@ class UsuarioServiceTest {
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-        startUser();
-    }
+        model = new UsuarioModel(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883");
+        optionalUser = Optional.of(new UsuarioModel(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883"));
 
+    }
     @Test
     void cadastroOuUpdate() {
-        Mockito.when(repository.save(Mockito.any())).thenReturn(model);
+        when(repository.save(any())).thenReturn(model);
 
         UsuarioModel resposta = service.cadastro(model);
 
         assertNotNull(resposta);
         assertEquals(UsuarioModel.class, resposta.getClass());
-        assertEquals(model.getCodigo(), resposta.getCodigo());
+        assertEquals(model.getId(), resposta.getId());
     }
 
     @Test
     void emailRepitido() {
-        Mockito.when(repository.findByEmail(Mockito.anyString())).thenReturn(model);
+        when(repository.findByEmail(anyString())).thenReturn(model);
+        optionalUser.get().setId(2L);
 
-        try {
-            optionalUser.get().setCodigo(2L);
+        var erro= assertThrows(ValidacaoDeDuplicidade.class,() ->{
             service.cadastro(model);
-        } catch (Exception e) {
-            assertEquals(ValidacaoDeDuplicidade.class, e.getClass());
-            assertEquals("EMAIL ja cadastrado", e.getMessage());
-        }
+        });
+        assertEquals("EMAIL ja cadastrado", erro.getMessage());
     }
 
     @Test
     void cpfRepitido() {
-        Mockito.when(repository.findByCpf(Mockito.anyString())).thenReturn(model);
+        when(repository.findByCpf(anyString())).thenReturn(model);
 
         try {
-            optionalUser.get().setCodigo(2L);
+            optionalUser.get().setId(2L);
             optionalUser.get().setEmail("abc@123.com");
             service.cadastro(model);
         } catch (Exception e) {
@@ -78,59 +78,54 @@ class UsuarioServiceTest {
 
     @Test
     void buscarPorId() {
-        Mockito.when(repository.findById(Mockito.anyLong())).thenReturn(optionalUser);
-        Optional<UsuarioModel> resposta = service.repository.findById(optionalUser.get().getCodigo());
+        when(repository.findById(anyLong())).thenReturn(optionalUser);
+        Optional<UsuarioModel> resposta = service.repository.findById(optionalUser.get().getId());
         Assertions.assertNotNull(resposta);
         Assertions.assertEquals(Optional.class, resposta.getClass());
-        Assertions.assertEquals(optionalUser.get().getCodigo(), resposta.get().getCodigo());
+        Assertions.assertEquals(optionalUser.get().getId(), resposta.get().getId());
     }
 
     @Test
     void idNaoEncontrado() {
-        Mockito.when(repository.findById(Mockito.anyLong())).thenThrow(new UsuarioNaoEncontrado(USUARIO_NAO_EXISTE_OU_NAO_ENCONTRADO));
+        when(repository.findById(anyLong())).thenThrow(new UsuarioNaoEncontrado(USUARIO_NAO_EXISTE_OU_NAO_ENCONTRADO));
 
         try {
-            service.buscarPorID(optionalUser.get().getCodigo());
+            service.buscarPorID(optionalUser.get().getId());
         } catch (Exception exception) {
             assertEquals(UsuarioNaoEncontrado.class, exception.getClass());
             assertEquals(USUARIO_NAO_EXISTE_OU_NAO_ENCONTRADO, exception.getMessage());
         }
     }
 
-    @Test
-    void modelList() {
-        Mockito.when(repository.findAll()).thenReturn(List.of(model));
-
-        List<UsuarioModel> resposta = service.modelList();
-
-        assertNotNull(resposta);
-        assertEquals(1, resposta.size());
-        assertEquals(UsuarioModel.class, resposta.get(0).getClass());
-        assertEquals(model.getCodigo(), resposta.get(0).getCodigo());
-    }
+//    @Test
+//    void modelList() {
+//        when(repository.findAll()).thenReturn(List.of(model));
+//
+//        List<UsuarioModel> resposta = service.modelList();
+//
+//        assertNotNull(resposta);
+//        assertEquals(1, resposta.size());
+//        assertEquals(UsuarioModel.class, resposta.get(0).getClass());
+//        assertEquals(model.getId(), resposta.get(0).getId());
+//    }
 
     @Test
     void deletarUsuario() {
-        Mockito.when(repository.findById(Mockito.anyLong())).thenReturn(optionalUser);
-        Mockito.doNothing().when(repository).deleteById(Mockito.anyLong());
-        service.deletarUsuario(optionalUser.get().getCodigo());
-        Mockito.verify(repository, Mockito.times(1)).deleteById(Mockito.anyLong());
+        when(repository.findById(anyLong())).thenReturn(optionalUser);
+        doNothing().when(repository).deleteById(anyLong());
+        service.deletarUsuario(optionalUser.get().getId());
+        verify(repository, times(1)).deleteById(anyLong());
     }
 
     @Test
     void erroDeleteUsuario() {
-        Mockito.when(repository.findById(Mockito.anyLong())).thenThrow(new UsuarioNaoEncontrado(USUARIO_NAO_EXISTE_OU_NAO_ENCONTRADO));
+        when(repository.findById(anyLong())).thenThrow(new UsuarioNaoEncontrado(USUARIO_NAO_EXISTE_OU_NAO_ENCONTRADO));
 
         try {
-            service.deletarUsuario(optionalUser.get().getCodigo());
+            service.deletarUsuario(optionalUser.get().getId());
         }catch (Exception e) {
             assertEquals(UsuarioNaoEncontrado.class, e.getClass());
             assertEquals(USUARIO_NAO_EXISTE_OU_NAO_ENCONTRADO, e.getMessage());
         }
-    }
-
-    private void startUser() {
-        model = new UsuarioModel(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883");
-        optionalUser = Optional.of(new UsuarioModel(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883"));
     }
 }

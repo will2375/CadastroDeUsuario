@@ -1,6 +1,6 @@
 package com.UsuariosCadastro.cadastro.intregacaoExterna.client;
 
-import com.UsuariosCadastro.cadastro.model.BeerResponse;
+import com.UsuariosCadastro.cadastro.model.dto.BeerRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,8 +11,8 @@ import java.util.List;
 public interface BeerClient {
 
     @GetMapping(value = "/random")
-    List<BeerResponse> getRandomBeer();
+    List<BeerRequest> getRandomBeer();
 
     @GetMapping(value = "/{id}")
-    List<BeerResponse> getBeerById(@PathVariable("id") Long id);
+    List<BeerRequest> getBeerById(@PathVariable("id") Long id);
 }
