@@ -1,15 +1,15 @@
 package com.UsuariosCadastro.cadastro.service;
 
 import com.UsuariosCadastro.cadastro.model.UsuarioModel;
+import com.UsuariosCadastro.cadastro.model.dto.UsuarioResponse;
 import com.UsuariosCadastro.cadastro.repository.UsuarioRepository;
-import com.UsuariosCadastro.cadastro.service.exceptions.UsuarioNaoEncontrado;
-import com.UsuariosCadastro.cadastro.service.exceptions.ValidacaoDeDuplicidade;
+import com.UsuariosCadastro.cadastro.exception.BadRequestException;
+import com.UsuariosCadastro.cadastro.exception.ValidacaoDeDuplicidade;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -87,27 +87,27 @@ class UsuarioServiceTest {
 
     @Test
     void idNaoEncontrado() {
-        when(repository.findById(anyLong())).thenThrow(new UsuarioNaoEncontrado(USUARIO_NAO_EXISTE_OU_NAO_ENCONTRADO));
+        when(repository.findById(anyLong())).thenThrow(new BadRequestException(USUARIO_NAO_EXISTE_OU_NAO_ENCONTRADO));
 
         try {
             service.buscarPorID(optionalUser.get().getId());
         } catch (Exception exception) {
-            assertEquals(UsuarioNaoEncontrado.class, exception.getClass());
+            assertEquals(BadRequestException.class, exception.getClass());
             assertEquals(USUARIO_NAO_EXISTE_OU_NAO_ENCONTRADO, exception.getMessage());
         }
     }
 
-//    @Test
-//    void modelList() {
-//        when(repository.findAll()).thenReturn(List.of(model));
-//
-//        List<UsuarioModel> resposta = service.modelList();
-//
-//        assertNotNull(resposta);
-//        assertEquals(1, resposta.size());
-//        assertEquals(UsuarioModel.class, resposta.get(0).getClass());
-//        assertEquals(model.getId(), resposta.get(0).getId());
-//    }
+    @Test
+    void modelList() {
+        when(repository.findAll()).thenReturn(List.of(model));
+
+        List<UsuarioResponse> resposta = service.modelList();
+
+        assertNotNull(resposta);
+        assertEquals(1, resposta.size());
+        assertEquals(UsuarioResponse.class, resposta.get(0).getClass());
+        assertEquals(model.getId(), resposta.get(0).getId());
+    }
 
     @Test
     void deletarUsuario() {
@@ -119,12 +119,12 @@ class UsuarioServiceTest {
 
     @Test
     void erroDeleteUsuario() {
-        when(repository.findById(anyLong())).thenThrow(new UsuarioNaoEncontrado(USUARIO_NAO_EXISTE_OU_NAO_ENCONTRADO));
+        when(repository.findById(anyLong())).thenThrow(new BadRequestException(USUARIO_NAO_EXISTE_OU_NAO_ENCONTRADO));
 
         try {
             service.deletarUsuario(optionalUser.get().getId());
         }catch (Exception e) {
-            assertEquals(UsuarioNaoEncontrado.class, e.getClass());
+            assertEquals(BadRequestException.class, e.getClass());
             assertEquals(USUARIO_NAO_EXISTE_OU_NAO_ENCONTRADO, e.getMessage());
         }
     }

@@ -5,10 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.br.CPF;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -27,16 +25,13 @@ public class UsuarioModel {
     private String nome;
     @Column
     private LocalDate nascimento;
-    @Column(unique = true) @Email
+    @Column(unique = true)
     private String email;
-    @Column(unique = true) @CPF
+    @Column(unique = true)
     private String cpf;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "addBeer", cascade = CascadeType.ALL)
-    private List<BeerModel> beerModel;
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "addBeer", cascade = CascadeType.ALL)
+//    private List<BeerModel> beerModel;
 
-    public UsuarioModel(long l, String william, LocalDate of, String s, String s1) {
-
-    }
 }

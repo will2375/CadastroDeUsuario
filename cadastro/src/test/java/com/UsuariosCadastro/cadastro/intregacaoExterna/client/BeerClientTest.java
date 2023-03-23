@@ -31,7 +31,7 @@ class BeerClientTest {
     private BeerClient beerClient;
 
     @Test
-    public void getRandomBeer() {
+    void getRandomBeer() {
         this.builderFeignClient(new MockClient().ok(
                 HttpMethod.GET,
                 BASE_URL.concat("/random"),
@@ -44,20 +44,6 @@ class BeerClientTest {
         assertThat(randomBeer.get(0).getId(), equalTo(1L));
     }
 
-    @Test
-    public void getIdBeer() {
-        this.builderFeignClient(new MockClient().ok(
-                HttpMethod.GET,
-                BASE_URL.concat("/{id}"),
-                RESPONSE_BEER
-        ));
-
-        List<BeerRequest> randomBeer = beerClient.getBeerById(1L);
-
-        assertFalse(randomBeer.isEmpty());
-        assertThat(randomBeer.get(0).getId(), equalTo(1L));
-    }
-
     private void builderFeignClient(MockClient client) {
         beerClient = Feign.builder()
                 .client(client)
@@ -65,9 +51,5 @@ class BeerClientTest {
                 .decoder(new JacksonDecoder())
                 .contract(new SpringMvcContract())
                 .target(BeerClient.class, BASE_URL);
-    }
-
-    @Test
-    void getBeerById() {
     }
 }

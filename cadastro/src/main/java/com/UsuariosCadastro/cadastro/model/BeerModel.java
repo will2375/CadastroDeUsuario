@@ -26,7 +26,7 @@ public class BeerModel {
     @Column
     private Long armagor;
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
-    private UsuarioModel addBeer;
+//    @ManyToOne
+//    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+//    private UsuarioModel addBeer;
 }

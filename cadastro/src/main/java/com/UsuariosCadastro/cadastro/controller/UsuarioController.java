@@ -32,8 +32,8 @@ public class UsuarioController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Optional<UsuarioModel>> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok().body(service.buscarPorID(id));
+    public ResponseEntity<UsuarioModel> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(service.buscarPorID(id));
     }
 
     @PostMapping("/cadastro")
@@ -45,8 +45,11 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<UsuarioModel> alterar(@RequestBody @Valid UsuarioModel model) {
-        return ResponseEntity.status(HttpStatus.OK).body(service.cadastro(model));
+    public ResponseEntity<UsuarioResponse> atualizar(@RequestBody @Valid UsuarioRequest request) {
+        UsuarioModel model = UsuarioRequestFactory.criar(request);
+        service.alterar(model);
+        UsuarioResponse response = UsuarioResponseFactory.criar(model);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/{id}")

@@ -1,6 +1,8 @@
 package com.UsuariosCadastro.cadastro.controller;
 
 import com.UsuariosCadastro.cadastro.model.UsuarioModel;
+import com.UsuariosCadastro.cadastro.model.dto.UsuarioRequest;
+import com.UsuariosCadastro.cadastro.model.dto.UsuarioResponse;
 import com.UsuariosCadastro.cadastro.service.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,54 +31,61 @@ class UsuarioControllerTeste {
 
     private UsuarioModel model;
 
+    private UsuarioRequest request;
+
+    private UsuarioResponse response;
+
     private Optional<UsuarioModel> optionalUser;
 
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-        startUser();
+        model = new UsuarioModel(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883");
+        request = new UsuarioRequest(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883");
+        optionalUser = Optional.of(new UsuarioModel(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883"));
+        response = new UsuarioResponse(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com");
     }
 
-//    @Test
-//    void buscarTodos() {
-//        Mockito.when(service.modelList()).thenReturn(List.of(model));
-//
-//        ResponseEntity<List<UsuarioModel>> response = controller.buscarTodos();
-//
-//        assertNotNull(response);
-//        assertNotNull(response.getBody());
-//        assertEquals(ResponseEntity.class, response.getClass());
-//        assertEquals(UsuarioModel.class, response.getBody().get(0).getClass());
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//    }
+    @Test
+    void buscarTodos() {
+        Mockito.when(service.modelList()).thenReturn(List.of(response));
+
+        ResponseEntity<List<UsuarioResponse>> response = controller.buscarTodos();
+
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(ResponseEntity.class, response.getClass());
+        assertEquals(UsuarioResponse.class, response.getBody().get(0).getClass());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
 
     @Test
     void buscarPorId() {
-        Mockito.when(service.buscarPorID(Mockito.anyLong())).thenReturn(optionalUser);
+        Mockito.when(service.buscarPorID(Mockito.anyLong())).thenReturn(model);
 
-        Optional<UsuarioModel> response = controller.buscarPorId(model.getId()).getBody();
+        UsuarioModel response = controller.buscarPorId(model.getId()).getBody();
 
         assertNotNull(response);
-        assertNotNull(response.get().getId());
-        assertEquals(Optional.class, response.getClass());
-        assertEquals(optionalUser.get().getId(), response.get().getId());
+        assertNotNull(response.getId());
+        assertEquals(UsuarioModel.class, response.getClass());
+        assertEquals(model.getId(), response.getId());
     }
 
-//    @Test
-//    void cadastrar() {
-//        Mockito.when(service.cadastro(Mockito.any())).thenReturn(model);
-//
-//        ResponseEntity<UsuarioModel> response = controller.cadastrar(model);
-//
-//        assertEquals(ResponseEntity.class, response.getClass());
-//        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-//    }
+    @Test
+    void cadastrar() {
+        Mockito.when(service.cadastro(Mockito.any())).thenReturn(model);
+
+        ResponseEntity<UsuarioResponse> response = controller.cadastrar(request);
+
+        assertEquals(ResponseEntity.class, response.getClass());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    }
 
     @Test
     void alterar() {
         Mockito.when(service.cadastro(model)).thenReturn(model);
 
-        ResponseEntity<UsuarioModel> response = controller.alterar(model);
+        ResponseEntity<UsuarioResponse> response = controller.atualizar(request);
 
         assertNotNull(response);
         assertNotNull(response.getBody());
@@ -93,10 +102,5 @@ class UsuarioControllerTeste {
 
         assertNotNull(response);
         Mockito.verify(service, Mockito.times(1)).deletarUsuario(Mockito.anyLong());
-    }
-
-    private void startUser() {
-        model = new UsuarioModel();
-        optionalUser = Optional.of(new UsuarioModel(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883"));
     }
 }

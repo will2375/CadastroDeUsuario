@@ -5,8 +5,8 @@ import com.UsuariosCadastro.cadastro.model.UsuarioModel;
 import com.UsuariosCadastro.cadastro.model.dto.UsuarioResponse;
 import com.UsuariosCadastro.cadastro.repository.BeerRepository;
 import com.UsuariosCadastro.cadastro.repository.UsuarioRepository;
-import com.UsuariosCadastro.cadastro.service.exceptions.UsuarioNaoEncontrado;
-import com.UsuariosCadastro.cadastro.service.exceptions.ValidacaoDeDuplicidade;
+import com.UsuariosCadastro.cadastro.exception.BadRequestException;
+import com.UsuariosCadastro.cadastro.exception.ValidacaoDeDuplicidade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +27,7 @@ public class UsuarioService {
 
     public List<UsuarioResponse> modelList() {
         List<UsuarioModel> listaUsuarios = repository.findAll();
-        return listaUsuarios.stream().map(model ->{
+        return listaUsuarios.stream().map(model -> {
             return UsuarioResponse.builder()
                     .id(model.getId()).nome(model.getNome()).email(model.getEmail()).nascimento(model.getNascimento()).build();
         }).collect(Collectors.toList());
@@ -43,21 +43,22 @@ public class UsuarioService {
         } else if (existeEmail != null) {
             throw new ValidacaoDeDuplicidade("EMAIL ja cadastrado");
         }
-//        BeerModel beerModel = (BeerModel) client.getRandomBeer();
-//        beerModel.getAddBeer().setId(model.getId());
-//
-//        beerRepository.save(beerModel);
-
         return repository.save(model);
-
     }
 
-    public Optional<UsuarioModel> buscarPorID(Long id) {
-        var inexistente = repository.findById(id);
-        if (inexistente == null) {
-            throw new UsuarioNaoEncontrado("Usuario não existe ou não encontrado");
+    public UsuarioModel alterar(UsuarioModel model) {
+        Optional<UsuarioModel> email = Optional.ofNullable(repository.findByEmail(model.getEmail()));
+        Optional<UsuarioModel> cpf = Optional.ofNullable(repository.findByCpf(model.getCpf()));
+        if (email.isPresent() && !email.get().getId().equals(model.getId())) {
+            throw new ValidacaoDeDuplicidade("EMAIL ja cadastrado");
+        }else if (cpf.isPresent() && !cpf.get().getId().equals(model.getId())) {
+            throw new ValidacaoDeDuplicidade("CPF ja cadastrado");
         }
-        return repository.findById(id);
+        return repository.save(model);
+    }
+
+    public UsuarioModel buscarPorID(Long id) {
+        return repository.findById(id).orElseThrow(() -> new BadRequestException("Usuario não encontrado"));
     }
 
     public void deletarUsuario(Long id) {

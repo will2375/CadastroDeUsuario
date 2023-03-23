@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.net.URI;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,10 +31,12 @@ class UsuarioControllerTest {
     private UsuarioService service;
     @Autowired
     private ObjectMapper mapper;
+
     @Test
     void buscarTodos() throws Exception {
-      mockMvc.perform(get("/usuarios")).andExpect(status().isOk());
+        mockMvc.perform(get("/usuarios")).andExpect(status().isOk());
     }
+
     @Test
     void cadastrar() throws Exception {
         URI uri = new URI("/usuarios/cadastro");
