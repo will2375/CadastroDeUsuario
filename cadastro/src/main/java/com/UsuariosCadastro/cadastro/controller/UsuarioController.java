@@ -2,6 +2,7 @@ package com.UsuariosCadastro.cadastro.controller;
 
 import com.UsuariosCadastro.cadastro.intregacaoExterna.client.BeerClient;
 import com.UsuariosCadastro.cadastro.model.UsuarioModel;
+import com.UsuariosCadastro.cadastro.model.dto.BeerRequest;
 import com.UsuariosCadastro.cadastro.model.dto.UsuarioRequest;
 import com.UsuariosCadastro.cadastro.model.dto.UsuarioResponse;
 import com.UsuariosCadastro.cadastro.model.factory.UsuarioRequestFactory;

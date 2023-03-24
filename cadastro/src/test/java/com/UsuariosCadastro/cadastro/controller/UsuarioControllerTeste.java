@@ -40,10 +40,10 @@ class UsuarioControllerTeste {
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-        model = new UsuarioModel(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883");
+        model = new UsuarioModel(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883", "breja");
         request = new UsuarioRequest(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883");
-        optionalUser = Optional.of(new UsuarioModel(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883"));
-        response = new UsuarioResponse(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com");
+        optionalUser = Optional.of(new UsuarioModel(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883", "breja"));
+        response = new UsuarioResponse(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "breja");
     }
 
     @Test

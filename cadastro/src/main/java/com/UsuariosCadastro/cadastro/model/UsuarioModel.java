@@ -29,6 +29,8 @@ public class UsuarioModel {
     private String email;
     @Column(unique = true)
     private String cpf;
+    @Column
+    private String cerveja;
 
 //    @JsonIgnore
 //    @OneToMany(mappedBy = "addBeer", cascade = CascadeType.ALL)

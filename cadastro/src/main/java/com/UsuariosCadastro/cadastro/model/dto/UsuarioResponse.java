@@ -1,13 +1,11 @@
 package com.UsuariosCadastro.cadastro.model.dto;
 
-import com.UsuariosCadastro.cadastro.model.UsuarioModel;
-import com.UsuariosCadastro.cadastro.repository.UsuarioRepository;
-import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @Builder
@@ -19,4 +17,5 @@ public class UsuarioResponse {
     private String nome;
     private LocalDate nascimento;
     private String email;
+    private String cerveja;
 }

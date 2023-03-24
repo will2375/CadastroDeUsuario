@@ -11,6 +11,7 @@ public class UsuarioResponseFactory {
                 .id(model.getId())
                 .nome(model.getNome())
                 .nascimento(model.getNascimento())
-                .email(model.getEmail()).build();
+                .email(model.getEmail())
+                .cerveja(model.getCerveja()).build();
     }
 }

@@ -1,12 +1,14 @@
 package com.UsuariosCadastro.cadastro.service;
 
+import com.UsuariosCadastro.cadastro.exception.BadRequestException;
+import com.UsuariosCadastro.cadastro.exception.ValidacaoDeDuplicidade;
 import com.UsuariosCadastro.cadastro.intregacaoExterna.client.BeerClient;
+import com.UsuariosCadastro.cadastro.model.BeerModel;
 import com.UsuariosCadastro.cadastro.model.UsuarioModel;
+import com.UsuariosCadastro.cadastro.model.dto.BeerRequest;
 import com.UsuariosCadastro.cadastro.model.dto.UsuarioResponse;
 import com.UsuariosCadastro.cadastro.repository.BeerRepository;
 import com.UsuariosCadastro.cadastro.repository.UsuarioRepository;
-import com.UsuariosCadastro.cadastro.exception.BadRequestException;
-import com.UsuariosCadastro.cadastro.exception.ValidacaoDeDuplicidade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,7 @@ public class UsuarioService {
         List<UsuarioModel> listaUsuarios = repository.findAll();
         return listaUsuarios.stream().map(model -> {
             return UsuarioResponse.builder()
-                    .id(model.getId()).nome(model.getNome()).email(model.getEmail()).nascimento(model.getNascimento()).build();
+                    .id(model.getId()).nome(model.getNome()).email(model.getEmail()).nascimento(model.getNascimento()).cerveja(model.getCerveja()).build();
         }).collect(Collectors.toList());
     }
 
@@ -43,6 +45,8 @@ public class UsuarioService {
         } else if (existeEmail != null) {
             throw new ValidacaoDeDuplicidade("EMAIL ja cadastrado");
         }
+        model.setCerveja(String.valueOf(client.getRandomBeer().stream().map(BeerRequest::getNome).collect(Collectors.toList())));
+
         return repository.save(model);
     }
 

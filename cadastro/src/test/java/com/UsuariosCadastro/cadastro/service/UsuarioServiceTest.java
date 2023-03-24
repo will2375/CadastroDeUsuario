@@ -36,12 +36,12 @@ class UsuarioServiceTest {
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-        model = new UsuarioModel(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883");
-        optionalUser = Optional.of(new UsuarioModel(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883"));
+        model = new UsuarioModel(3L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883", "breja");
+        optionalUser = Optional.of(new UsuarioModel(2L, "william", LocalDate.of(1995, 10, 19), "will@em.com", "32439582883", "breja"));
 
     }
     @Test
-    void cadastroOuUpdate() {
+    void cadastro() {
         when(repository.save(any())).thenReturn(model);
 
         UsuarioModel resposta = service.cadastro(model);
@@ -52,7 +52,7 @@ class UsuarioServiceTest {
     }
 
     @Test
-    void emailRepitido() {
+    void emailRepitidoCadastro() {
         when(repository.findByEmail(anyString())).thenReturn(model);
         optionalUser.get().setId(2L);
 
@@ -63,17 +63,14 @@ class UsuarioServiceTest {
     }
 
     @Test
-    void cpfRepitido() {
+    void cpfRepitidoCadastro() {
         when(repository.findByCpf(anyString())).thenReturn(model);
+        optionalUser.get().setId(2L);
 
-        try {
-            optionalUser.get().setId(2L);
-            optionalUser.get().setEmail("abc@123.com");
+        var erro= assertThrows(ValidacaoDeDuplicidade.class, () ->{
             service.cadastro(model);
-        } catch (Exception e) {
-            assertEquals(ValidacaoDeDuplicidade.class, e.getClass());
-            assertEquals("CPF ja cadastrado", e.getMessage());
-        }
+        });
+        assertEquals("CPF ja cadastrado", erro.getMessage());
     }
 
     @Test
